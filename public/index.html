@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EdiVideo — AI Video Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0b;--bg2:#111113;--bg3:#1a1a1d;--bg4:#252528;--bg5:#333338;--t1:#fafaf8;--t2:#c8c8d4;--t3:#9999a8;--t4:#666672;--acc:#e8ff47;--purple:#7c3aed;--red:#ef4444;--green:#22c55e;--blue:#3b82f6;--b:rgba(255,255,255,.08);--b2:rgba(255,255,255,.15);--r:12px;--rs:8px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh}
+.hidden{display:none!important}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 20px;border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .2s;font-family:'DM Sans',sans-serif;text-decoration:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-acc{background:var(--acc);color:#000;font-weight:700}.btn-acc:hover:not(:disabled){background:#d4f000;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--t3);border:1px solid var(--b)}.btn-ghost:hover{color:var(--t1);border-color:var(--b2)}
+.btn-outline{background:transparent;color:var(--t1);border:1px solid var(--b2)}.btn-outline:hover{background:var(--bg4)}
+.btn-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25)}.btn-red:hover{background:rgba(239,68,68,.3)}
+.btn-sm{padding:6px 14px;font-size:13px}.btn-lg{padding:14px 32px;font-size:16px}
+/* inputs */
+.inp{width:100%;background:var(--bg4);border:1px solid var(--b);border-radius:var(--rs);padding:10px 13px;color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border .2s}
+.inp:focus{border-color:var(--acc)}.inp::placeholder{color:var(--t4)}
+textarea.inp{resize:vertical;min-height:90px;line-height:1.6}select.inp{cursor:pointer}
+.lbl{display:block;font-size:12px;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.fg{margin-bottom:16px}
+/* card */
+.card{background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);padding:22px}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(10,10,11,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--b)}
+.logo{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;cursor:pointer}.logo span{color:var(--acc)}
+.nav-r{display:flex;gap:10px;align-items:center}
+/* toast */
+#toasts{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.t-item{padding:11px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;animation:tIn .25s ease;max-width:300px;pointer-events:none}
+.t-ok{background:#14532d;border:1px solid #16a34a;color:#bbf7d0}
+.t-err{background:#7f1d1d;border:1px solid #dc2626;color:#fecaca}
+.t-info{background:#1e3a5f;border:1px solid #3b82f6;color:#bfdbfe}
+@keyframes tIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+/* modal */
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:var(--bg2);border:1px solid var(--b2);border-radius:18px;padding:36px;width:100%;max-width:400px;position:relative}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--bg4);border:1px solid var(--b);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:14px}.modal-close:hover{color:var(--t1)}
+.auth-tabs{display:flex;background:var(--bg4);border-radius:var(--rs);padding:3px;margin-bottom:22px}
+.auth-tab{flex:1;padding:7px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;border-radius:6px;color:var(--t3);transition:all .2s}
+.auth-tab.on{background:var(--bg3);color:var(--t1)}
+/* dashboard layout */
+#dash{padding-top:62px;min-height:100vh;display:grid;grid-template-columns:210px 1fr}
+.sidebar{background:var(--bg3);border-right:1px solid var(--b);height:calc(100vh - 62px);position:sticky;top:62px;overflow-y:auto;padding:16px 0}
+.sb-logo{padding:2px 18px 14px;font-family:'Syne',sans-serif;font-size:17px;font-weight:800;border-bottom:1px solid var(--b);margin-bottom:8px}.sb-logo span{color:var(--acc)}
+.sb-sec{padding:12px 18px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--t4)}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:13px;color:var(--t3);cursor:pointer;transition:all .15s;position:relative;border-radius:0}
+.sb-item:hover{color:var(--t1);background:var(--bg4)}
+.sb-item.on{color:var(--t1);background:var(--bg4)}.sb-item.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:26px;background:var(--acc);border-radius:0 3px 3px 0}
+.sb-icon{font-size:15px;width:18px;text-align:center}
+/* main content */
+.main{padding:26px 28px;overflow-y:auto;min-height:calc(100vh - 62px)}
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--t3);margin-bottom:22px}
+/* stat cards */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px}
+.stat{background:var(--bg3);border:1px solid var(--b);border-radius:var(--rs);padding:14px}
+.stat-l{font-size:11px;color:var(--t4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat-n{font-family:'Syne',sans-serif;font-size:21px;font-weight:700}
+.stat-s{font-size:12px;color:var(--green);margin-top:3px}
+/* video grid */
+.vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.vcard{background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .2s}
+.vcard:hover{border-color:var(--b2);transform:translateY(-2px)}
+.vthumb{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden}
+.vthumb .ov{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;display:flex;align-items:center;justify-content:center;font-size:28px;transition:opacity .2s}
+.vcard:hover .ov{opacity:1}
+.vinfo{padding:11px 12px}
+.vtitle{font-size:13px;font-weight:500;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vmeta{font-size:11px;color:var(--t4);display:flex;gap:8px;align-items:center}
+.badge{display:inline-flex;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.b-ok{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+.b-proc{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+/* upload zone */
+.uzone{border:2px dashed var(--b2);border-radius:var(--r);padding:44px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.uzone:hover,.uzone.drag{border-color:var(--acc);background:rgba(232,255,71,.03)}
+.uzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.uzone h4{font-family:'Syne',sans-serif;font-size:17px;margin-bottom:7px}
+.uzone p{font-size:13px;color:var(--t3)}
+/* progress */
+.pbar{height:4px;background:var(--bg5);border-radius:4px;overflow:hidden;margin-top:8px}
+.pfill{height:100%;background:var(--acc);border-radius:4px;transition:width .3s}
+/* studio */
+.studio{display:grid;grid-template-columns:290px 1fr 250px;gap:0;margin:0 -28px;min-height:calc(100vh - 130px)}
+.spanel{border-right:1px solid var(--b);padding:18px;overflow-y:auto;background:var(--bg3)}
+.spanel:last-child{border-right:none;border-left:1px solid var(--b)}
+.scanvas{background:var(--bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px}
+.phone{width:200px;aspect-ratio:9/16;border-radius:16px;border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;overflow:hidden}
+.phone-name{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.5)}
+.ph5{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);margin-bottom:10px}
+/* voices */
+.voi{background:var(--bg4);border:1px solid var(--b);border-radius:var(--rs);padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s;margin-bottom:7px}
+.voi:hover{border-color:var(--b2)}.voi.on{border-color:var(--acc);background:rgba(232,255,71,.05)}
+.vai{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.vname{font-size:13px;font-weight:500;margin-bottom:2px}.vdesc{font-size:11px;color:var(--t4)}
+.play-v{width:26px;height:26px;border-radius:50%;background:var(--bg5);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;cursor:pointer;transition:all .2s}
+.play-v:hover{background:var(--acc);color:#000;border-color:var(--acc)}
+/* avatar mini */
+.avgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.avmini{aspect-ratio:2/3;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative}
+.avmini:hover{transform:scale(1.04)}.avmini.on{border-color:var(--acc)}
+.avlang{position:absolute;bottom:2px;right:2px;font-size:8px;background:rgba(0,0,0,.7);border-radius:3px;padding:1px 3px}
+/* video modal */
+#vmodal .modal-box{max-width:640px;padding:0;overflow:hidden}
+.vm-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--b)}
+.vm-body{padding:20px}
+.fplayer{aspect-ratio:16/9;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:72px;margin-bottom:14px;position:relative;overflow:hidden;cursor:pointer}
+.fplayer:hover .play-hint{opacity:1}
+.play-hint{position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0;transition:opacity .2s}
+/* spinner */
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--bg5);border-top-color:var(--acc);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* processing overlay */
+.proc-ov{position:absolute;inset:0;background:rgba(0,0,0,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;border-radius:16px}
+/* responsive */
+@media(max-width:900px){
+  nav{padding:0 16px}
+  #dash{grid-template-columns:1fr}.sidebar{display:none}
+  .stats{grid-template-columns:1fr 1fr}
+  .vgrid{grid-template-columns:1fr 1fr}
+  .studio{grid-template-columns:1fr}
+  .spanel:not(.spanel:first-child){display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOASTS -->
+<div id="toasts"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="go('home')">Edi<span>Video</span></div>
+  <div class="nav-r" id="nav-r">
+    <button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Sign In</button>
+    <button class="btn btn-acc btn-sm" onclick="openAuth('reg')">Get Started Free</button>
+  </div>
+</nav>
+
+<!-- ════ HOME PAGE ════ -->
+<div id="pg-home" style="padding-top:62px">
+  <div style="max-width:900px;margin:0 auto;padding:90px 32px 60px;text-align:center">
+    <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 16px 5px 8px;background:rgba(232,255,71,.08);border:1px solid rgba(232,255,71,.2);border-radius:100px;font-size:13px;color:var(--acc);margin-bottom:26px;font-weight:500">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--acc);animation:sp 2s infinite;display:inline-block"></span>
+      Hindi AI Voices — Priya, Kavya, Arjun, Rohan 🇮🇳
+    </div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:clamp(42px,7vw,82px);font-weight:800;line-height:1.0;letter-spacing:-3px;margin-bottom:20px">
+      Create <span style="color:var(--acc)">AI Videos</span><br>
+      <span style="-webkit-text-stroke:1px rgba(255,255,255,.3);color:transparent">in Minutes</span>
+    </h1>
+    <p style="font-size:17px;color:var(--t3);max-width:460px;margin:0 auto 36px;line-height:1.7;font-weight:300">Type a script in Hindi or English, pick an avatar, generate a professional video instantly.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-acc btn-lg" onclick="openAuth('reg')">Start Free — No Card Needed →</button>
+      <button class="btn btn-outline btn-lg" onclick="needAuth('dashboard')">Open Dashboard</button>
+    </div>
+    <div style="display:flex;gap:36px;justify-content:center;margin-top:52px;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700">12M+</div><div style="font-size:12px;color:var(--t4);text-transform:uppercase;letter-spacing:.08em">Videos Created</div></div>
+      <div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700">1,100+</div><div style="font-size:12px;color:var(--t4);text-transform:uppercase;letter-spacing:.08em">AI Avatars</div></div>
+      <div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700">175+</div><div style="font-size:12px;color:var(--t4);text-transform:uppercase;letter-spacing:.08em">Languages</div></div>
+      <div style="text-align:center"><div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700">🇮🇳 हिंदी</div><div style="font-size:12px;color:var(--t4);text-transform:uppercase;letter-spacing:.08em">Supported</div></div>
+    </div>
+  </div>
+  <div style="max-width:1100px;margin:0 auto;padding:0 32px 80px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+    <div class="card" style="cursor:pointer" onclick="openAuth('reg')"><div style="font-size:28px;margin-bottom:12px">📝</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px">Text to Video</div><div style="font-size:13px;color:var(--t3);line-height:1.6">Write in Hindi or English. AI generates a complete video with your avatar and voice.</div></div>
+    <div class="card" style="cursor:pointer" onclick="openAuth('reg')"><div style="font-size:28px;margin-bottom:12px">🎙️</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px">Hindi AI Voices 🇮🇳</div><div style="font-size:13px;color:var(--t3);line-height:1.6">Priya (warm female), Kavya (soft female), Arjun (confident male), Rohan (deep male).</div></div>
+    <div class="card" style="cursor:pointer" onclick="openAuth('reg')"><div style="font-size:28px;margin-bottom:12px">📤</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px">Upload Video</div><div style="font-size:13px;color:var(--t3);line-height:1.6">Upload MP4, MOV, AVI files. Add dubbing, subtitles, or translate to any language.</div></div>
+    <div class="card" style="cursor:pointer" onclick="openAuth('reg')"><div style="font-size:28px;margin-bottom:12px">🌍</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px">Video Translation</div><div style="font-size:13px;color:var(--t3);line-height:1.6">Translate any video into Hindi and 175+ languages with perfect lip-sync.</div></div>
+    <div class="card" style="cursor:pointer" onclick="openAuth('reg')"><div style="font-size:28px;margin-bottom:12px">🤖</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px">AI Avatars</div><div style="font-size:13px;color:var(--t3);line-height:1.6">1,100+ photorealistic avatars including Indian avatars. Create your digital twin.</div></div>
+    <div class="card" style="cursor:pointer;background:rgba(232,255,71,.05);border-color:rgba(232,255,71,.2)" onclick="openAuth('reg')"><div style="font-size:28px;margin-bottom:12px">👤</div><div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:7px">Free Account</div><div style="font-size:13px;color:var(--t3);line-height:1.6">Sign up in 30 seconds. Get 3 free videos per month. No credit card required.</div></div>
+  </div>
+</div>
+
+<!-- ════ DASHBOARD ════ -->
+<div id="pg-dash" class="hidden" id="dash">
+  <div id="dash" style="padding-top:62px;min-height:100vh;display:grid;grid-template-columns:210px 1fr">
+    <div class="sidebar">
+      <div class="sb-logo">Edi<span>Video</span></div>
+      <div class="sb-sec">Main</div>
+      <div class="sb-item on" onclick="tab('home-tab')" id="sb-home-tab"><span class="sb-icon">🏠</span>Dashboard</div>
+      <div class="sb-item" onclick="tab('create-tab')" id="sb-create-tab"><span class="sb-icon">🎬</span>Create Video</div>
+      <div class="sb-item" onclick="tab('upload-tab')" id="sb-upload-tab"><span class="sb-icon">📤</span>Upload Video</div>
+      <div class="sb-item" onclick="tab('videos-tab')" id="sb-videos-tab"><span class="sb-icon">📁</span>My Videos</div>
+      <div class="sb-item" onclick="tab('translate-tab')" id="sb-translate-tab"><span class="sb-icon">🌍</span>Translate</div>
+      <div class="sb-sec">Account</div>
+      <div class="sb-item" onclick="tab('profile-tab')" id="sb-profile-tab"><span class="sb-icon">👤</span>Profile</div>
+      <div class="sb-item" onclick="doLogout()"><span class="sb-icon">🚪</span>Log Out</div>
+    </div>
+    <div class="main">
+
+      <!-- DASHBOARD HOME -->
+      <div id="home-tab">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div><div class="page-title" id="greet">Good morning 👋</div><div class="page-sub">Here's your activity overview.</div></div>
+          <button class="btn btn-acc btn-sm" onclick="tab('create-tab')">+ New Video</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-l">Total Videos</div><div class="stat-n" id="st-total">0</div><div class="stat-s">all time</div></div>
+          <div class="stat"><div class="stat-l">This Month</div><div class="stat-n" id="st-month">0</div><div class="stat-s">↑ videos created</div></div>
+          <div class="stat"><div class="stat-l">Storage</div><div class="stat-n" id="st-storage">0 MB</div><div class="stat-s">used</div></div>
+          <div class="stat"><div class="stat-l">Plan</div><div class="stat-n" id="st-plan" style="font-size:16px">Free</div><div class="stat-s" style="cursor:pointer;text-decoration:underline" onclick="go('home')">Upgrade →</div></div>
+        </div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:12px">Recent Videos</div>
+        <div class="vgrid" id="recent-grid"></div>
+        <div id="no-vid-msg" style="text-align:center;padding:44px;color:var(--t4)">
+          <div style="font-size:44px;margin-bottom:14px">🎬</div>
+          <div style="font-size:15px;font-weight:500;margin-bottom:8px">No videos yet</div>
+          <div style="font-size:13px;margin-bottom:18px">Create your first AI video or upload one</div>
+          <button class="btn btn-acc btn-sm" onclick="tab('create-tab')">Create First Video</button>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <div style="font-size:13px;font-weight:500;margin-bottom:12px">⚡ Quick Actions</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+            <button class="btn btn-ghost" style="flex-direction:column;height:72px;border-radius:var(--r)" onclick="tab('create-tab')"><span style="font-size:20px">📝</span><span style="font-size:12px;margin-top:3px">Create</span></button>
+            <button class="btn btn-ghost" style="flex-direction:column;height:72px;border-radius:var(--r)" onclick="tab('upload-tab')"><span style="font-size:20px">📤</span><span style="font-size:12px;margin-top:3px">Upload</span></button>
+            <button class="btn btn-ghost" style="flex-direction:column;height:72px;border-radius:var(--r)" onclick="tab('translate-tab')"><span style="font-size:20px">🌍</span><span style="font-size:12px;margin-top:3px">Translate</span></button>
+            <button class="btn btn-ghost" style="flex-direction:column;height:72px;border-radius:var(--r)" onclick="tab('videos-tab')"><span style="font-size:20px">📁</span><span style="font-size:12px;margin-top:3px">My Videos</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREATE VIDEO -->
+      <div id="create-tab" class="hidden">
+        <div class="page-title">🎬 Create Video</div>
+        <div class="page-sub">Write a script, choose an avatar and voice, then generate.</div>
+        <div class="studio">
+          <!-- left -->
+          <div class="spanel">
+            <div class="fg"><div class="ph5">Language</div>
+              <select class="inp" id="c-lang" onchange="langChanged()">
+                <option value="en">🇬🇧 English</option>
+                <option value="hi">🇮🇳 Hindi</option>
+                <option value="es">🇪🇸 Spanish</option>
+                <option value="fr">🇫🇷 French</option>
+              </select>
+            </div>
+            <div class="fg"><div class="ph5">Script</div>
+              <textarea class="inp" id="c-script" placeholder="Write your script here...
+
+हिंदी में लिखें:
+'नमस्ते! आज मैं आपको...'
+
+Or in English:
+'Hello! Today I want to...'" style="min-height:150px"></textarea>
+              <div style="display:flex;justify-content:space-between;margin-top:5px">
+                <span id="c-chars" style="font-size:11px;color:var(--t4)">0 chars</span>
+                <button class="btn btn-ghost btn-sm" onclick="aiSuggest()" style="padding:3px 10px;font-size:12px">✨ Suggest</button>
+              </div>
+            </div>
+            <div class="fg"><div class="ph5">Video Title</div><input class="inp" id="c-title" value="My Video" placeholder="Video title"></div>
+            <div class="fg"><div class="ph5">Resolution</div>
+              <select class="inp" id="c-res">
+                <option value="720p">720p HD</option>
+                <option value="1080p" selected>1080p Full HD</option>
+                <option value="4k">4K (Business plan)</option>
+              </select>
+            </div>
+            <button class="btn btn-acc" style="width:100%;margin-top:6px" id="gen-btn" onclick="createVideo()">▶ Generate Video</button>
+          </div>
+          <!-- canvas -->
+          <div class="scanvas">
+            <div class="phone" id="c-phone" style="background:linear-gradient(160deg,#1a0533,#4a0e9a)">
+              <span id="c-emoji" style="font-size:64px">👩</span>
+              <div class="phone-name" id="c-pname">Priya — Hindi Female</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <button class="btn btn-ghost btn-sm">⏮</button>
+              <button style="width:46px;height:46px;border-radius:50%;background:var(--acc);border:none;color:#000;font-size:17px;cursor:pointer;font-weight:700">▶</button>
+              <button class="btn btn-ghost btn-sm">⏭</button>
+            </div>
+            <div style="font-size:12px;color:var(--t4)">Select avatar + voice, then Generate</div>
+          </div>
+          <!-- right -->
+          <div class="spanel">
+            <div class="fg"><div class="ph5">Choose Avatar</div>
+              <div class="avgrid" id="av-grid"></div>
+            </div>
+            <div class="fg"><div class="ph5">Voice</div><div id="voice-list"></div></div>
+            <div class="fg"><div class="ph5">Subtitles</div>
+              <select class="inp" id="c-subs">
+                <option value="auto">Auto (match language)</option>
+                <option value="en">English always</option>
+                <option value="hi">Hindi always</option>
+                <option value="none">No subtitles</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD VIDEO -->
+      <div id="upload-tab" class="hidden">
+        <div class="page-title">📤 Upload Video</div>
+        <div class="page-sub">Upload your video file — MP4, MOV, AVI, WebM up to 500MB.</div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="uzone" id="uzone" ondragover="ev(event,'drag',true)" ondragleave="ev(event,'drag',false)" ondrop="onDrop(event)">
+            <input type="file" accept="video/*,.mp4,.mov,.avi,.webm,.mkv" id="file-inp" onchange="onFilePick(event)">
+            <div style="font-size:44px;margin-bottom:14px">📁</div>
+            <h4>Drop your video here</h4>
+            <p>MP4, MOV, AVI, WebM · Max 500MB</p>
+            <p style="margin-top:6px;font-size:12px;color:var(--t4)">Or click anywhere to browse</p>
+          </div>
+          <div id="up-prog" class="hidden" style="margin-top:18px">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:7px">
+              <span style="font-size:20px">🎬</span>
+              <div style="flex:1"><div id="up-name" style="font-size:13px;font-weight:500;margin-bottom:3px"></div><div id="up-size" style="font-size:11px;color:var(--t4)"></div></div>
+              <span id="up-pct" style="font-size:13px;font-weight:500;color:var(--acc)">0%</span>
+            </div>
+            <div class="pbar"><div class="pfill" id="up-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+        <div id="up-done" class="hidden">
+          <div style="font-size:15px;font-weight:500;margin-bottom:14px">What would you like to do with this video?</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="card" style="cursor:pointer" onclick="tab('translate-tab')"><div style="font-size:26px;margin-bottom:9px">🌍</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">Translate &amp; Dub</div><div style="font-size:12px;color:var(--t3)">Translate to Hindi or 175+ other languages with lip-sync</div></div>
+            <div class="card" style="cursor:pointer" onclick="toast('Subtitles generation started!','ok')"><div style="font-size:26px;margin-bottom:9px">📝</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">Auto Subtitles</div><div style="font-size:12px;color:var(--t3)">Generate Hindi + English subtitles automatically</div></div>
+            <div class="card" style="cursor:pointer" onclick="toast('AI Enhancement queued!','ok')"><div style="font-size:26px;margin-bottom:9px">✨</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">AI Enhance</div><div style="font-size:12px;color:var(--t3)">Upscale, noise reduction, color grading</div></div>
+            <div class="card" style="cursor:pointer" onclick="tab('videos-tab')"><div style="font-size:26px;margin-bottom:9px">📁</div><div style="font-size:14px;font-weight:500;margin-bottom:4px">View in My Videos</div><div style="font-size:12px;color:var(--t3)">See all your uploaded and created videos</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY VIDEOS -->
+      <div id="videos-tab" class="hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div><div class="page-title">📁 My Videos</div><div class="page-sub">All your created and uploaded videos.</div></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="tab('upload-tab')">📤 Upload</button>
+            <button class="btn btn-acc btn-sm" onclick="tab('create-tab')">+ Create</button>
+          </div>
+        </div>
+        <div class="vgrid" id="all-grid"></div>
+        <div id="no-vid2" class="hidden" style="text-align:center;padding:44px;color:var(--t4)">
+          <div style="font-size:44px;margin-bottom:14px">📁</div>
+          <div style="font-size:15px;font-weight:500;margin-bottom:18px">No videos yet</div>
+          <button class="btn btn-acc btn-sm" onclick="tab('create-tab')">Create First Video</button>
+        </div>
+      </div>
+
+      <!-- TRANSLATE -->
+      <div id="translate-tab" class="hidden">
+        <div class="page-title">🌍 Translate Video</div>
+        <div class="page-sub">Translate any of your videos into 175+ languages with lip-sync.</div>
+        <div class="card">
+          <div style="margin-bottom:16px;display:inline-flex;align-items:center;gap:8px;padding:5px 13px;background:rgba(255,153,0,.1);border:1px solid rgba(255,153,0,.25);border-radius:var(--rs);font-size:12px;color:#fbbf24">🇮🇳 Hindi translation — native quality voices</div>
+          <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:14px;align-items:center;margin-bottom:16px">
+            <div style="background:var(--bg4);border:1px solid var(--b);border-radius:var(--rs);padding:14px">
+              <div class="lbl">From</div>
+              <select class="inp" id="tr-from" style="margin-top:5px">
+                <option>🇬🇧 English</option>
+                <option>🇮🇳 Hindi</option>
+                <option>🇪🇸 Spanish</option>
+              </select>
+            </div>
+            <div style="text-align:center;font-size:20px;cursor:pointer;color:var(--acc)" onclick="swapTr()">⇄</div>
+            <div style="background:var(--bg4);border:1px solid var(--b);border-radius:var(--rs);padding:14px">
+              <div class="lbl">To</div>
+              <select class="inp" id="tr-to" style="margin-top:5px">
+                <option value="hi">🇮🇳 Hindi</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Spanish</option>
+                <option value="fr">🇫🇷 French</option>
+                <option value="de">🇩🇪 German</option>
+                <option value="ja">🇯🇵 Japanese</option>
+                <option value="zh">🇨🇳 Chinese</option>
+                <option value="ar">🇸🇦 Arabic</option>
+                <option value="ko">🇰🇷 Korean</option>
+                <option value="pt">🇧🇷 Portuguese</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Select Video to Translate</label>
+            <select class="inp" id="tr-video"><option value="">— Choose a video —</option></select>
+          </div>
+          <div style="display:flex;gap:16px;margin-bottom:16px;font-size:13px">
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" checked id="tr-lipsync" style="accent-color:var(--acc)"> Lip-sync</label>
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" checked id="tr-voice" style="accent-color:var(--acc)"> Voice clone</label>
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="checkbox" checked id="tr-subs" style="accent-color:var(--acc)"> Auto subtitles</label>
+          </div>
+          <button class="btn btn-acc" id="tr-btn" onclick="doTranslate()">🌍 Start Translation</button>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div id="profile-tab" class="hidden">
+        <div class="page-title">👤 Profile</div>
+        <div class="page-sub">Manage your account information.</div>
+        <div class="card" style="margin-bottom:14px;max-width:520px">
+          <div style="display:flex;align-items:center;gap:18px;margin-bottom:22px">
+            <div id="prof-av" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:24px;font-weight:700;flex-shrink:0">U</div>
+            <div>
+              <div id="prof-name" style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700">User</div>
+              <div id="prof-email" style="font-size:13px;color:var(--t3);margin-top:2px">email</div>
+              <div style="margin-top:6px"><span class="badge b-ok" id="prof-plan">Free Plan</span></div>
+            </div>
+          </div>
+          <div class="fg"><label class="lbl">Full Name</label><input class="inp" id="pf-name" placeholder="Your name"></div>
+          <div class="fg"><label class="lbl">Email</label><input class="inp" id="pf-email" type="email"></div>
+          <div class="fg"><label class="lbl">New Password</label><input class="inp" id="pf-pass" type="password" placeholder="Leave blank to keep current"></div>
+          <button class="btn btn-acc" onclick="saveProfile()">Save Changes</button>
+        </div>
+        <div class="card" style="max-width:520px">
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px">Danger Zone</div>
+          <button class="btn btn-red btn-sm" onclick="deleteAccount()">Delete Account</button>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div>
+</div>
+
+<!-- ════ AUTH MODAL ════ -->
+<div class="modal-bg hidden" id="auth-modal">
+  <div class="modal-box">
+    <div class="modal-close" onclick="closeAuth()">✕</div>
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px">Edi<span style="color:var(--acc)">Video</span></div>
+    <div style="font-size:13px;color:var(--t3);margin-bottom:20px" id="auth-sub">Create your free account</div>
+    <div class="auth-tabs">
+      <div class="auth-tab on" id="tab-login" onclick="switchAuth('login')">Sign In</div>
+      <div class="auth-tab" id="tab-reg" onclick="switchAuth('reg')">Register</div>
+    </div>
+    <!-- LOGIN -->
+    <div id="f-login">
+      <div class="fg"><label class="lbl">Email</label><input class="inp" id="l-email" type="email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')login()"></div>
+      <div class="fg"><label class="lbl">Password</label><input class="inp" id="l-pass" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')login()"></div>
+      <button class="btn btn-acc" style="width:100%" id="l-btn" onclick="login()">Sign In</button>
+    </div>
+    <!-- REGISTER -->
+    <div id="f-reg" class="hidden">
+      <div class="fg"><label class="lbl">Full Name</label><input class="inp" id="r-name" placeholder="Dishang Patel"></div>
+      <div class="fg"><label class="lbl">Email</label><input class="inp" id="r-email" type="email" placeholder="you@example.com"></div>
+      <div class="fg"><label class="lbl">Password</label><input class="inp" id="r-pass" type="password" placeholder="Min 6 characters"></div>
+      <div class="fg"><label class="lbl">I am a...</label>
+        <select class="inp" id="r-role"><option>Content Creator</option><option>Educator</option><option>Business</option><option>Developer</option></select>
+      </div>
+      <button class="btn btn-acc" style="width:100%;margin-bottom:8px" id="r-btn" onclick="register()">Create Free Account</button>
+      <div style="font-size:12px;color:var(--t4);text-align:center">No credit card required. Free forever.</div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--t4);margin:14px 0">— or —</div>
+    <button class="btn btn-outline" style="width:100%" onclick="googleLogin()">🔵 Continue with Google</button>
+  </div>
+</div>
+
+<!-- ════ VIDEO MODAL ════ -->
+<div class="modal-bg hidden" id="vmodal">
+  <div class="modal-box" style="max-width:600px;padding:0;overflow:hidden">
+    <div class="vm-head">
+      <span style="font-weight:500;font-size:14px" id="vm-title">Video</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="downloadV()">⬇ Download</button>
+        <button class="btn btn-ghost btn-sm" onclick="shareV()">🔗 Share</button>
+        <div class="modal-close" style="position:static" onclick="closeVM()">✕</div>
+      </div>
+    </div>
+    <div class="vm-body">
+      <div class="fplayer" id="vm-player">
+        <span id="vm-emoji" style="font-size:80px">🎬</span>
+        <div class="play-hint">▶</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;margin-bottom:14px">
+        <div style="color:var(--t3)">Language: <span id="vm-lang" style="color:var(--t1)"></span></div>
+        <div style="color:var(--t3)">Voice: <span id="vm-voice" style="color:var(--t1)"></span></div>
+        <div style="color:var(--t3)">Resolution: <span id="vm-res" style="color:var(--t1)"></span></div>
+        <div style="color:var(--t3)">Status: <span id="vm-status" style="color:var(--t1)"></span></div>
+      </div>
+      <div id="vm-script" style="background:var(--bg4);border-radius:var(--rs);padding:11px;font-size:13px;color:var(--t3);line-height:1.6;max-height:70px;overflow-y:auto;margin-bottom:14px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-red btn-sm" onclick="deleteV()">🗑 Delete</button>
+        <button class="btn btn-ghost btn-sm" onclick="translateV()">🌍 Translate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG & STATE
+// ═══════════════════════════════════════════
+const API = '';  // empty = same origin (localhost:4000)
+let user = null;
+let token = null;
+let videos = [];
+let curVid = null;
+let selAv = {id:'priya-av',emoji:'👩',name:'Priya',bg:'linear-gradient(160deg,#1a0533,#4a0e9a)'};
+let selVoice = 'priya';
+let afterAuth = null;
+
+const VOICES = [
+  {id:'priya', name:'Priya',  lang:'Hindi Female',      emoji:'👩', color:'#ff6b9d', hindi:true,  desc:'Warm • Professional • हिंदी'},
+  {id:'kavya', name:'Kavya',  lang:'Hindi Female Soft',  emoji:'👧', color:'#ffb347', hindi:true,  desc:'Gentle • Storytelling • हिंदी'},
+  {id:'arjun', name:'Arjun',  lang:'Hindi Male',         emoji:'👨', color:'#6b9dff', hindi:true,  desc:'Confident • Clear • हिंदी'},
+  {id:'rohan', name:'Rohan',  lang:'Hindi Male Deep',    emoji:'🧔', color:'#6bffb0', hindi:true,  desc:'Deep • Authoritative • हिंदी'},
+  {id:'sarah', name:'Sarah',  lang:'English Female',     emoji:'👩‍💼',color:'#c8c8d4', hindi:false, desc:'Professional • British'},
+  {id:'james', name:'James',  lang:'English Male',       emoji:'👨‍💼',color:'#c8c8d4', hindi:false, desc:'Deep • Broadcast • American'},
+];
+
+const AVATARS = [
+  {id:'priya-av', emoji:'👩',  name:'Priya',  lang:'🇮🇳', bg:'linear-gradient(160deg,#1a0533,#4a0e9a)'},
+  {id:'arjun-av', emoji:'👨',  name:'Arjun',  lang:'🇮🇳', bg:'linear-gradient(160deg,#0a2a1a,#1a6a3a)'},
+  {id:'kavya-av', emoji:'👧',  name:'Kavya',  lang:'🇮🇳', bg:'linear-gradient(160deg,#2a0a1a,#6a1a4a)'},
+  {id:'rohan-av', emoji:'🧔',  name:'Rohan',  lang:'🇮🇳', bg:'linear-gradient(160deg,#0a1a2a,#1a4a6a)'},
+  {id:'sarah-av', emoji:'👩‍💼', name:'Sarah',  lang:'🇬🇧', bg:'linear-gradient(160deg,#1a1a2e,#2a2a4e)'},
+  {id:'james-av', emoji:'👨‍💼', name:'James',  lang:'🇬🇧', bg:'linear-gradient(160deg,#2e1a1a,#4e2a2a)'},
+];
+
+// ═══════════════════════════════════════════
+// API CALLS
+// ═══════════════════════════════════════════
+async function api(path, opts={}) {
+  const headers = {'Content-Type':'application/json'};
+  if(token) headers['Authorization'] = 'Bearer '+token;
+  try {
+    const r = await fetch(API+path, {...opts, headers:{...headers,...(opts.headers||{})}});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'Server error');
+    return d;
+  } catch(e) {
+    if(e.message.includes('fetch')) throw new Error('Cannot reach server. Is node server.js running?');
+    throw e;
+  }
+}
+
+async function apiForm(path, formData) {
+  const headers = {};
+  if(token) headers['Authorization'] = 'Bearer '+token;
+  try {
+    const r = await fetch(API+path, {method:'POST', headers, body:formData});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'Upload failed');
+    return d;
+  } catch(e) {
+    if(e.message.includes('fetch')) throw new Error('Cannot reach server.');
+    throw e;
+  }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', ()=>{
+  token = localStorage.getItem('ev_tok');
+  const saved = localStorage.getItem('ev_user');
+  if(token && saved) {
+    user = JSON.parse(saved);
+    updateNav();
+    // verify token still valid
+    api('/api/me').then(d=>{ user=d.user; localStorage.setItem('ev_user',JSON.stringify(user)); updateNav(); }).catch(()=>{ doLogout(); });
+  }
+  renderVoices();
+  renderAvatars();
+  const sc = document.getElementById('c-script');
+  if(sc) sc.addEventListener('input', ()=>{ document.getElementById('c-chars').textContent=sc.value.length+' chars'; });
+});
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function go(p) {
+  document.getElementById('pg-home').classList.toggle('hidden', p!=='home');
+  document.getElementById('pg-dash').classList.toggle('hidden', p!=='dash');
+  window.scrollTo(0,0);
+}
+
+function needAuth(dest) {
+  if(!user){ afterAuth=dest; openAuth('login'); return; }
+  go('dash');
+  if(dest && dest!=='dashboard') setTimeout(()=>tab(dest+'-tab'),50);
+}
+
+function tab(id) {
+  // hide all tabs
+  document.querySelectorAll('[id$="-tab"]').forEach(el=>{
+    if(el.closest('#pg-dash')) el.classList.add('hidden');
+  });
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
+  // update sidebar
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('on'));
+  const sb = document.getElementById('sb-'+id);
+  if(sb) sb.classList.add('on');
+  // load data
+  if(id==='home-tab') loadDash();
+  if(id==='videos-tab') loadVideos('all-grid','no-vid2');
+  if(id==='translate-tab') fillTransSelect();
+  if(id==='profile-tab') loadProfile();
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function openAuth(mode) {
+  document.getElementById('auth-modal').classList.remove('hidden');
+  switchAuth(mode);
+}
+function closeAuth() { document.getElementById('auth-modal').classList.add('hidden'); }
+function switchAuth(mode) {
+  const isLogin = mode==='login';
+  document.getElementById('f-login').classList.toggle('hidden',!isLogin);
+  document.getElementById('f-reg').classList.toggle('hidden',isLogin);
+  document.getElementById('tab-login').classList.toggle('on',isLogin);
+  document.getElementById('tab-reg').classList.toggle('on',!isLogin);
+  document.getElementById('auth-sub').textContent = isLogin ? 'Welcome back!' : 'Create your free account — no card needed';
+}
+
+async function login() {
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(!email||!pass){toast('Fill all fields','err');return;}
+  const btn=document.getElementById('l-btn');
+  btn.innerHTML='<span class="spin"></span> Signing in...'; btn.disabled=true;
+  try {
+    const d = await api('/api/login',{method:'POST',body:JSON.stringify({email,password:pass})});
+    onAuth(d);
+  } catch(e){ toast(e.message,'err'); }
+  finally { btn.innerHTML='Sign In'; btn.disabled=false; }
+}
+
+async function register() {
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  if(!name||!email||!pass){toast('Fill all fields','err');return;}
+  if(pass.length<6){toast('Password min 6 characters','err');return;}
+  const btn=document.getElementById('r-btn');
+  btn.innerHTML='<span class="spin"></span> Creating...'; btn.disabled=true;
+  try {
+    const d = await api('/api/register',{method:'POST',body:JSON.stringify({name,email,password:pass})});
+    onAuth(d);
+    toast('Welcome to EdiVideo! 🎉','ok');
+  } catch(e){ toast(e.message,'err'); }
+  finally { btn.innerHTML='Create Free Account'; btn.disabled=false; }
+}
+
+async function googleLogin() {
+  const email='google_'+Date.now()+'@gmail.com';
+  try {
+    const d = await api('/api/register',{method:'POST',body:JSON.stringify({name:'Google User',email,password:'g_'+Date.now()})});
+    onAuth(d);
+  } catch(e){ toast(e.message,'err'); }
+}
+
+function onAuth(d) {
+  token=d.token; user=d.user;
+  localStorage.setItem('ev_tok',token);
+  localStorage.setItem('ev_user',JSON.stringify(user));
+  closeAuth(); updateNav();
+  toast('Welcome, '+user.name.split(' ')[0]+'! 👋','ok');
+  const dest=afterAuth||'dashboard'; afterAuth=null;
+  go('dash');
+  loadDash();
+}
+
+function doLogout() {
+  token=null; user=null; videos=[];
+  localStorage.removeItem('ev_tok'); localStorage.removeItem('ev_user');
+  updateNav(); go('home');
+  toast('Logged out','info');
+}
+
+function updateNav() {
+  const nr=document.getElementById('nav-r');
+  if(user) {
+    const init=user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    nr.innerHTML=`<span style="font-size:13px;color:var(--t3)">Hi, ${user.name.split(' ')[0]}</span>
+    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer" onclick="go('dash')">${init}</div>
+    <button class="btn btn-acc btn-sm" onclick="go('dash');loadDash()">Dashboard</button>`;
+  } else {
+    nr.innerHTML=`<button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Sign In</button><button class="btn btn-acc btn-sm" onclick="openAuth('reg')">Get Started Free</button>`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+async function loadDash() {
+  if(!user) return;
+  const h=new Date().getHours();
+  document.getElementById('greet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+user.name.split(' ')[0]+' 👋';
+  try {
+    const d=await api('/api/stats');
+    document.getElementById('st-total').textContent=d.total;
+    document.getElementById('st-plan').textContent=d.plan.charAt(0).toUpperCase()+d.plan.slice(1);
+    document.getElementById('st-storage').textContent=(d.total*12.4).toFixed(1)+' MB';
+    document.getElementById('st-month').textContent=d.total; // simplified
+  } catch(e){}
+  loadVideos('recent-grid','no-vid-msg',6);
+}
+
+async function loadVideos(gridId, emptyId, limit=999) {
+  try {
+    const d=await api('/api/videos');
+    videos=d.videos||[];
+    const grid=document.getElementById(gridId);
+    const empty=document.getElementById(emptyId);
+    if(!grid) return;
+    const show=videos.slice(0,limit);
+    if(show.length===0){
+      grid.innerHTML='';
+      if(empty) empty.classList.remove('hidden');
+    } else {
+      if(empty) empty.classList.add('hidden');
+      grid.innerHTML=show.map(v=>vCard(v)).join('');
+    }
+  } catch(e){ toast(e.message,'err'); }
+}
+
+function vCard(v) {
+  const avMap={
+    'priya-av':['👩','linear-gradient(160deg,#1a0533,#4a0e9a)'],
+    'arjun-av':['👨','linear-gradient(160deg,#0a2a1a,#1a6a3a)'],
+    'kavya-av':['👧','linear-gradient(160deg,#2a0a1a,#6a1a4a)'],
+    'rohan-av':['🧔','linear-gradient(160deg,#0a1a2a,#1a4a6a)'],
+    'sarah-av':['👩‍💼','linear-gradient(160deg,#1a1a2e,#2a2a4e)'],
+    'james-av':['👨‍💼','linear-gradient(160deg,#2e1a1a,#4e2a2a)'],
+  };
+  const [emoji,bg]=avMap[v.avatarId]||['🎬','linear-gradient(135deg,#1a1a2e,#2a2a4e)'];
+  const flag=v.language==='hi'?'🇮🇳':v.language==='en'?'🇬🇧':'🌍';
+  const date=new Date(v.created).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  const badge=v.status==='completed'?'<span class="badge b-ok">Done</span>':'<span class="badge b-proc">Processing</span>';
+  return `<div class="vcard" onclick="openV('${v.id}')">
+    <div class="vthumb" style="background:${bg}"><span>${emoji}</span><div class="ov">▶</div></div>
+    <div class="vinfo"><div class="vtitle">${v.title}</div><div class="vmeta"><span>${flag} ${v.voiceName||'AI'}</span><span>${date}</span>${badge}</div></div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// VIDEO CREATE
+// ═══════════════════════════════════════════
+function renderVoices() {
+  const el=document.getElementById('voice-list'); if(!el) return;
+  const sorted=[...VOICES.filter(v=>v.hindi),...VOICES.filter(v=>!v.hindi)];
+  el.innerHTML='';
+  sorted.forEach(v=>{
+    const d=document.createElement('div');
+    d.className='voi'+(v.id===selVoice?' on':'');
+    d.innerHTML=`<div class="vai" style="background:${v.color}22;color:${v.color}">${v.emoji}</div>
+      <div style="flex:1"><div class="vname">${v.name}${v.hindi?' 🇮🇳':''}</div><div class="vdesc">${v.desc}</div></div>
+      <div class="play-v" onclick="playVoice('${v.id}',event)">▶</div>`;
+    d.onclick=(e)=>{ if(e.target.closest('.play-v')) return; pickVoice(v); };
+    el.appendChild(d);
+  });
+}
+
+function pickVoice(v) {
+  selVoice=v.id;
+  document.getElementById('c-pname').textContent=v.name+' — '+v.lang;
+  renderVoices();
+}
+
+function playVoice(id,e) {
+  e.stopPropagation();
+  const v=VOICES.find(x=>x.id===id);
+  const txt=v.hindi?'नमस्ते, मेरा नाम '+v.name+' है।':'Hello, I am '+v.name+'.';
+  if('speechSynthesis' in window){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang=v.hindi?'hi-IN':'en-US'; u.rate=0.9;
+    speechSynthesis.speak(u);
+    toast('▶ Playing: '+v.name,'info');
+  }
+}
+
+function renderAvatars() {
+  const el=document.getElementById('av-grid'); if(!el) return;
+  el.innerHTML='';
+  AVATARS.forEach(av=>{
+    const d=document.createElement('div');
+    d.className='avmini'+(av.id===selAv.id?' on':'');
+    d.style.background=av.bg;
+    d.innerHTML=`${av.emoji}<span class="avlang">${av.lang}</span>`;
+    d.onclick=()=>{
+      selAv=av;
+      document.getElementById('c-emoji').textContent=av.emoji;
+      document.getElementById('c-pname').textContent=av.name;
+      document.getElementById('c-phone').style.background=av.bg;
+      renderAvatars();
+    };
+    el.appendChild(d);
+  });
+}
+
+function langChanged() {
+  const lang=document.getElementById('c-lang').value;
+  if(lang==='hi' && !['priya','kavya','arjun','rohan'].includes(selVoice)){
+    pickVoice(VOICES[0]); toast('🇮🇳 Switched to Hindi voice: Priya','info');
+  }
+}
+
+function aiSuggest() {
+  const lang=document.getElementById('c-lang').value;
+  const s={
+    hi:'नमस्ते! आज मैं आपको हमारे नए AI वीडियो प्लेटफ़ॉर्म EdiVideo के बारे में बताने जा रहा हूँ। इसकी मदद से आप मिनटों में प्रोफेशनल वीडियो बना सकते हैं — बिना कैमरा, बिना एडिटिंग।',
+    en:'Hello! Today I want to introduce you to EdiVideo — the AI-powered video platform. Create professional videos with realistic avatars in minutes. No camera or editing skills needed.',
+    es:'¡Hola! Hoy quiero presentarte EdiVideo — la plataforma de creación de videos con IA.',
+    fr:'Bonjour! Aujourd\'hui je veux vous présenter EdiVideo — la plateforme de création vidéo par IA.'
+  };
+  const t=document.getElementById('c-script');
+  t.value=s[lang]||s.en;
+  document.getElementById('c-chars').textContent=t.value.length+' chars';
+  toast('✨ Script suggested!','ok');
+}
+
+async function createVideo() {
+  const script=document.getElementById('c-script').value.trim();
+  const title=document.getElementById('c-title').value.trim()||'My Video';
+  const language=document.getElementById('c-lang').value;
+  const resolution=document.getElementById('c-res').value;
+  if(!script){toast('Please write a script first!','err');return;}
+  const voice=VOICES.find(v=>v.id===selVoice);
+  const btn=document.getElementById('gen-btn');
+  btn.innerHTML='<span class="spin"></span> Generating...'; btn.disabled=true;
+  // show overlay on phone
+  const phone=document.getElementById('c-phone');
+  const ov=document.createElement('div'); ov.className='proc-ov';
+  ov.innerHTML='<div class="spin" style="width:36px;height:36px;border-width:3px"></div><div style="font-size:13px">Sending to server...</div>';
+  phone.appendChild(ov);
+  try {
+    const d=await api('/api/videos',{method:'POST',body:JSON.stringify({
+      title,script,language,voiceId:selVoice,voiceName:voice?.name||'Priya',
+      avatarId:selAv.id,resolution,subtitles:true
+    })});
+    phone.removeChild(ov);
+    btn.innerHTML='▶ Generate Video'; btn.disabled=false;
+    videos.unshift(d.video);
+    toast('Video queued! ✅ Check My Videos in a few seconds.','ok');
+    // poll status
+    const iv=setInterval(async()=>{
+      try {
+        const s=await api('/api/videos');
+        const v=s.videos.find(x=>x.id===d.video.id);
+        if(v&&v.status==='completed'){clearInterval(iv);toast('🎉 Video ready! Go to My Videos','ok');}
+      } catch{clearInterval(iv);}
+    },2500);
+  } catch(e){
+    if(phone.contains(ov)) phone.removeChild(ov);
+    btn.innerHTML='▶ Generate Video'; btn.disabled=false;
+    toast(e.message,'err');
+  }
+}
+
+// ═══════════════════════════════════════════
+// FILE UPLOAD
+// ═══════════════════════════════════════════
+function ev(e,cls,add){e.preventDefault();document.getElementById('uzone').classList.toggle(cls,add);}
+function onDrop(e){e.preventDefault();document.getElementById('uzone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)doUpload(f);}
+function onFilePick(e){const f=e.target.files[0];if(f)doUpload(f);}
+
+async function doUpload(file) {
+  if(!file.type.startsWith('video/')&&!file.name.match(/\.(mp4|mov|avi|webm|mkv)$/i)){
+    toast('Please upload a video file','err'); return;
+  }
+  if(file.size>500*1024*1024){toast('Max 500MB for local server','err');return;}
+  document.getElementById('up-prog').classList.remove('hidden');
+  document.getElementById('up-name').textContent=file.name;
+  document.getElementById('up-size').textContent=(file.size/1024/1024).toFixed(1)+' MB';
+  let pct=0;
+  const iv=setInterval(()=>{
+    pct=Math.min(pct+3,88);
+    document.getElementById('up-bar').style.width=pct+'%';
+    document.getElementById('up-pct').textContent=pct+'%';
+  },150);
+  try {
+    const fd=new FormData(); fd.append('video',file);
+    const d=await apiForm('/api/upload',fd);
+    clearInterval(iv);
+    document.getElementById('up-bar').style.width='100%';
+    document.getElementById('up-pct').textContent='✓ Done';
+    document.getElementById('up-done').classList.remove('hidden');
+    videos.unshift(d.video);
+    toast('Uploaded: '+file.name+' ✅','ok');
+  } catch(e){
+    clearInterval(iv);
+    document.getElementById('up-pct').textContent='✗ Failed';
+    toast(e.message,'err');
+  }
+}
+
+// ═══════════════════════════════════════════
+// TRANSLATION
+// ═══════════════════════════════════════════
+async function fillTransSelect() {
+  try {
+    const d=await api('/api/videos');
+    videos=d.videos||[];
+    const sel=document.getElementById('tr-video');
+    sel.innerHTML='<option value="">— Choose a video —</option>'+
+      videos.map(v=>`<option value="${v.id}">${v.title}</option>`).join('');
+  } catch(e){}
+}
+
+function swapTr(){
+  const f=document.getElementById('tr-from'),t=document.getElementById('tr-to');
+  const tmp=f.value; f.value=t.value; t.value=tmp;
+}
+
+async function doTranslate(){
+  const videoId=document.getElementById('tr-video').value;
+  const targetLanguage=document.getElementById('tr-to').value;
+  if(!videoId){toast('Please select a video','err');return;}
+  const btn=document.getElementById('tr-btn');
+  btn.innerHTML='<span class="spin"></span> Starting...'; btn.disabled=true;
+  try {
+    const d=await api('/api/translate',{method:'POST',body:JSON.stringify({videoId,targetLanguage})});
+    toast('🌍 Translation started! Check My Videos in a few seconds.','ok');
+    // poll
+    const iv=setInterval(async()=>{
+      try{
+        const s=await api('/api/videos');
+        const v=s.videos.find(x=>x.id===d.video.id);
+        if(v&&v.status==='completed'){clearInterval(iv);toast('✅ Translation done! Check My Videos.','ok');}
+      }catch{clearInterval(iv);}
+    },2500);
+  } catch(e){ toast(e.message,'err'); }
+  finally { btn.innerHTML='🌍 Start Translation'; btn.disabled=false; }
+}
+
+// ═══════════════════════════════════════════
+// VIDEO MODAL
+// ═══════════════════════════════════════════
+function openV(id) {
+  const v=videos.find(x=>x.id===id); if(!v) return;
+  curVid=id;
+  const avMap={'priya-av':['👩','linear-gradient(160deg,#1a0533,#4a0e9a)'],'arjun-av':['👨','linear-gradient(160deg,#0a2a1a,#1a6a3a)'],'kavya-av':['👧','linear-gradient(160deg,#2a0a1a,#6a1a4a)'],'rohan-av':['🧔','linear-gradient(160deg,#0a1a2a,#1a4a6a)'],'sarah-av':['👩‍💼','linear-gradient(160deg,#1a1a2e,#2a2a4e)'],'james-av':['👨‍💼','linear-gradient(160deg,#2e1a1a,#4e2a2a)']};
+  const [emoji,bg]=avMap[v.avatarId]||['🎬','#1a1a2e'];
+  document.getElementById('vm-title').textContent=v.title;
+  document.getElementById('vm-emoji').textContent=emoji;
+  document.getElementById('vm-player').style.background=bg;
+  const langs={hi:'Hindi 🇮🇳',en:'English 🇬🇧',es:'Spanish',fr:'French',de:'German',ja:'Japanese'};
+  document.getElementById('vm-lang').textContent=langs[v.language]||v.language;
+  document.getElementById('vm-voice').textContent=v.voiceName||'AI';
+  document.getElementById('vm-res').textContent=v.resolution||'1080p';
+  document.getElementById('vm-status').textContent=v.status==='completed'?'✅ Ready':'⏳ Processing';
+  document.getElementById('vm-script').textContent=v.script||'';
+  document.getElementById('vmodal').classList.remove('hidden');
+}
+function closeVM(){document.getElementById('vmodal').classList.add('hidden');}
+function downloadV(){toast('⬇ Download started! (connect real storage for actual file)','info');}
+function shareV(){
+  const link='http://localhost:4000/watch/'+curVid;
+  navigator.clipboard?.writeText(link);
+  toast('🔗 Link copied: '+link,'info');
+}
+async function deleteV(){
+  if(!confirm('Delete this video?')) return;
+  try{
+    await api('/api/videos/'+curVid,{method:'DELETE'});
+    videos=videos.filter(v=>v.id!==curVid);
+    closeVM();
+    loadVideos('all-grid','no-vid2');
+    loadVideos('recent-grid','no-vid-msg',6);
+    toast('Video deleted','info');
+  }catch(e){toast(e.message,'err');}
+}
+function translateV(){closeVM();tab('translate-tab');setTimeout(fillTransSelect,100);}
+
+// ═══════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════
+function loadProfile(){
+  if(!user) return;
+  const init=user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('prof-av').textContent=init;
+  document.getElementById('prof-name').textContent=user.name;
+  document.getElementById('prof-email').textContent=user.email;
+  document.getElementById('prof-plan').textContent=(user.plan||'free').charAt(0).toUpperCase()+(user.plan||'free').slice(1)+' Plan';
+  document.getElementById('pf-name').value=user.name;
+  document.getElementById('pf-email').value=user.email;
+}
+
+async function saveProfile(){
+  const name=document.getElementById('pf-name').value.trim();
+  const email=document.getElementById('pf-email').value.trim();
+  const pass=document.getElementById('pf-pass').value;
+  if(!name||!email){toast('Name and email required','err');return;}
+  try{
+    const body={name,email}; if(pass&&pass.length>=6) body.password=pass;
+    const d=await api('/api/me',{method:'PUT',body:JSON.stringify(body)});
+    user=d.user; localStorage.setItem('ev_user',JSON.stringify(user));
+    updateNav(); loadProfile();
+    toast('Profile saved! ✅','ok');
+  }catch(e){toast(e.message,'err');}
+}
+
+async function deleteAccount(){
+  if(!confirm('Delete your account and ALL videos permanently?')) return;
+  try{
+    await api('/api/me',{method:'DELETE'});
+    doLogout();
+    toast('Account deleted','info');
+  }catch(e){toast(e.message,'err');}
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function toast(msg,type='info'){
+  const c=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='t-item t-'+(type==='err'?'err':type==='ok'?'ok':'info');
+  el.textContent=msg;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(),3800);
+}
+</script>
+</body>
+</html>
